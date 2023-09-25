@@ -1,0 +1,46 @@
+version: '3'
+
+services:
+  cr_mongodb:
+    image: mongo:latest
+    ports:
+      - "27017:27017"
+    environment:
+      MONGO_INITDB_ROOT_USERNAME: cr
+      MONGO_INITDB_ROOT_PASSWORD: cr_password
+    volumes:
+      - cr_mongodb_data:/data/db
+
+  cr_cassandra1:
+    image: cassandra:latest
+    ports:
+      - "9042:9042"
+    environment:
+      CASSANDRA_CLUSTER_NAME: CR_CLUSTER
+      CASSANDRA_ENDPOINT_SNITCH: GossipingPropertyFileSnitch
+    volumes:
+      - cr_cassandra1_data:/var/lib/cassandra
+
+  cr_cassandra2:
+    image: cassandra:latest
+    environment:
+      CASSANDRA_CLUSTER_NAME: CR_CLUSTER
+      CASSANDRA_ENDPOINT_SNITCH: GossipingPropertyFileSnitch
+      CASSANDRA_SEEDS: cr_cassandra1
+    volumes:
+      - cr_cassandra2_data:/var/lib/cassandra
+
+  cr_cassandra3:
+    image: cassandra:latest
+    environment:
+      CASSANDRA_CLUSTER_NAME: CR_CLUSTER
+      CASSANDRA_ENDPOINT_SNITCH: GossipingPropertyFileSnitch
+      CASSANDRA_SEEDS: cr_cassandra1
+    volumes:
+      - cr_cassandra3_data:/var/lib/cassandra
+
+volumes:
+  cr_mongodb_data:
+  cr_cassandra1_data:
+  cr_cassandra2_data:
+  cr_cassandra3_data:
