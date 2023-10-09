@@ -19,7 +19,7 @@ Un nœud "seed" est un nœud de référence pour aider les nouveaux nœuds à re
 C'est un outil en ligne de commande pour intéragir avec Cassandra.
 
 ```bash
-docker exec -it cr_cassandra1 cqlsh
+docker exec -it r510-cr_cassandra1-1 cqlsh
 ```
 
 ## Keyspaces
@@ -123,6 +123,15 @@ CREATE TABLE cr_cfdemo4 (
 
 ## Vues matérialisées
 
+Par défaut, cette fonctionnalité est désactivée. Pour l'activer :
+
+```bash
+docker exec -it r510-cr_cassandra1-1 bash
+sed -i 's/materialized_views_enabled: false/materialized_views_enabled: true/' /etc/cassandra/cassandra.yaml
+exit
+docker restart r510-cr_cassandra1-1
+```
+
 Une vue matérialisée est une table générée à partir d'une table existante et organisée différemment.
 
 ```sql
@@ -189,7 +198,7 @@ CREATE CUSTOM INDEX ON cr_cfdemo1 (cr_col2) USING 'org.apache.cassandra.index.sa
 `nodetool` est un outil en ligne de commande pour gérer le Cassandra. Réparer une table signifie synchroniser les données entre les nœuds pour s'assurer qu'ils ont tous les mêmes données.
 
 ```bash
-docker exec -it cr_cassandra1 nodetool repair cr_demo1 cr_cfdemo1
+docker exec -it r510-cr_cassandra1-1 nodetool repair cr_demo1 cr_cfdemo1
 ```
 
 ## Gestion des nœuds et résilience
@@ -199,7 +208,7 @@ La résilience est la capacité d'un système à fonctionner et à se remettre d
 On peut arrêter certains noeuds pour tester. Arrêtons les deuxième et troisième noeuds :
 
 ```bash
-docker-compose stop cr_cassandra2 cr_cassandra3
+docker-compose stop r510-cr_cassandra2-1 r510-cr_cassandra3-1
 ```
 
 Avec deux nœuds sur trois arrêtés, nous avons maintenant moins que le quorum de nœuds en fonctionnement car nous avons un facteur de réplication de 3.
@@ -207,6 +216,8 @@ Avec deux nœuds sur trois arrêtés, nous avons maintenant moins que le quorum 
 Le quorum est un concept fondamental dans les systèmes distribués comme Cassandra. Il représente le nombre minimal de nœuds qui doivent confirmer la réception d'une opération pour que celle-ci soit considérée comme réussie. Dans le contexte de Cassandra, un quorum est généralement défini comme la majorité des réplicas pour une entrée spécifique. Ainsi, avec un facteur de réplication (RF) de 3, le quorum serait atteint avec 2 nœuds.
 
 Lorsqu'on effectue des opérations d'insertion ou de sélection, on peut spécifier le niveau de cohérence qu'on souhaite. Le niveau de cohérence détermine combien de nœuds doivent répondre pour qu'une opération soit considérée comme réussie.
+
+Pour comprendre comment les nœuds du cluster communiquent entre eux et comment ils comprennent la topologie du cluster, Cassandra utilise ce qu'on appelle un "snitch". Dans notre configuration, nous utilisons GossipingPropertyFileSnitch, qui détermine comment les nœuds sont répartis géographiquement et comment ils doivent communiquer. Cela influence également la manière dont les données sont répliquées à travers le cluster, ce qui est crucial pour le quorum et la résilience.
 
 Essayons d'insérer une donnée en spécifiant un niveau de cohérence de QUORUM :
 
@@ -219,7 +230,7 @@ Et essayons de la récupérer :
 
 ```sql
 CONSISTENCY QUORUM;
-SELECT * FROM cr_demo1.cr_cfdemo1 WHERE cr_col2 = 'test_quorum';
+SELECT * FROM cr_demo1.cr_cfdemo1 WHERE cr_col2 = 'test_quorum' ALLOW FILTERING;
 ```
 
 Avec seulement un nœud en fonctionnement, ces opérations échoueront car nous n'atteignons pas le quorum nécessaire. On aura une erreur indiquant que le niveau de cohérence requis n'a pas été atteint. Pour que ces opérations réussissent, au moins deux nœuds (le quorum pour un RF de 3) doivent être en ligne et fonctionnels.
@@ -227,7 +238,7 @@ Avec seulement un nœud en fonctionnement, ces opérations échoueront car nous 
 Redémarrons l'un des noeuds :
 
 ```bash
-docker-compose start cr_cassandra2
+docker-compose start r510-cr_cassandra2-1
 ```
 
 Avec deux nœuds maintenant en fonctionnement, nous avons atteint le quorum nécessaire pour un RF de 3.
@@ -239,7 +250,7 @@ INSERT INTO cr_demo1.cr_cfdemo1 (cr_col1, cr_col2, cr_col3) VALUES (uuid(), 'tes
 
 ```sql
 CONSISTENCY QUORUM;
-SELECT * FROM cr_demo1.cr_cfdemo1 WHERE cr_col2 = 'test_quorum_recovery';
+SELECT * FROM cr_demo1.cr_cfdemo1 WHERE cr_col2 = 'test_quorum_recovery' ALLOW FILTERING;
 ```
 
 Cette fois, les opérations devraient réussir car deux nœuds (le quorum pour un RF de 3) sont en ligne et fonctionnels. Cela démontre la capacité de Cassandra à se remettre des pannes et à continuer à fonctionner dès que le quorum est rétabli.
