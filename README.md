@@ -93,7 +93,7 @@ Identifie de manière unique une ligne dans une table :
 - Simple : une seule colonne
 - Composite : plusieurs colonnes
 
-La prmeière colonne est la clé de partition, les colonnes suivantes sont les clés de clustering.
+La première colonne est la clé de partition, les colonnes suivantes sont les clés de clustering.
 
 ```sql
 USE cr_demo2;
