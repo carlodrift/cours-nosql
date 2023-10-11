@@ -205,7 +205,35 @@ docker restart r510-cr_cassandra1-1
 SASI (SStable Attached Secondary Index) est un type d'index secondaire pour Cassandra. Il offre des capacités de recherche avancées, comme la recherche par préfixe, suffixe et sous-chaîne.
 
 ```sql
-CREATE CUSTOM INDEX ON cr_cfdemo1 (cr_col2) USING 'org.apache.cassandra.index.sasi.SASIIndex';
+CREATE CUSTOM INDEX ON cr_cfdemo1 (cr_col2) USING 'org.apache.cassandra.index.sasi.SASIIndex' WITH OPTIONS = {'mode': 'CONTAINS', 'analyzer_class': 'org.apache.cassandra.index.sasi.analyzer.StandardAnalyzer', 'case_sensitive': 'false'};
+```
+
+- `mode` : Le mode de recherche. CONTAINS est utile pour les recherches par sous-chaîne.
+- `analyzer_class` : L'analyseur à utiliser. StandardAnalyzer est un analyseur général qui divise le texte en termes basés sur des espaces blancs et des signes de ponctuation.
+- `case_sensitive`: Indique si la recherche doit être sensible à la casse ou non.
+
+```sql
+INSERT INTO cr_demo1.cr_cfdemo1 (cr_col1, cr_col2, cr_col3) VALUES (uuid(), 'test_prefix_suffix', 123);
+INSERT INTO cr_demo1.cr_cfdemo1 (cr_col1, cr_col2, cr_col3) VALUES (uuid(), 'prefix_test_suffix', 456);
+INSERT INTO cr_demo1.cr_cfdemo1 (cr_col1, cr_col2, cr_col3) VALUES (uuid(), 'prefix_suffix_test', 789);
+```
+
+Recherche par préfixe :
+
+```sql
+SELECT * FROM cr_demo1.cr_cfdemo1 WHERE cr_col2 LIKE 'test%';
+```
+
+Recherche par suffixe :
+
+```sql
+SELECT * FROM cr_demo1.cr_cfdemo1 WHERE cr_col2 LIKE '%test';
+```
+
+Recherche par sous-chaîne :
+
+```sql
+SELECT * FROM cr_demo1.cr_cfdemo1 WHERE cr_col2 LIKE '%test%';
 ```
 
 ## Nodetool et réparation
@@ -216,7 +244,7 @@ CREATE CUSTOM INDEX ON cr_cfdemo1 (cr_col2) USING 'org.apache.cassandra.index.sa
 docker exec -it r510-cr_cassandra1-1 nodetool repair cr_demo1 cr_cfdemo1
 ```
 
-## Gestion des nœuds et résilience - Facultatif
+## Gestion des nœuds et résilience (facultatif)
 
 La suite n'est pas faisable si vous utilisez la version low-ram.
 
