@@ -2,7 +2,7 @@
 
 ## Lancement du conteneur Docker
 
-Le fichier `docker-compose.yml` est disponible dans le repo.
+Le fichier `docker-compose.yml` est disponible dans le repo. Une version pour les machines avec peu de RAM est également disponible : `docker-compose-low-ram.yml`.
 
 ```bash
 docker-compose up -d
@@ -13,6 +13,8 @@ Il y a trois nœuds Cassandra distincts. Ils font tous partie du même cluster. 
 Un nœud "seed" est un nœud de référence pour aider les nouveaux nœuds à rejoindre le cluster. Lorsqu'un nœud Cassandra démarre, il utilise les nœuds "seed" pour obtenir une liste des autres nœuds du cluster et comprendre la topologie globale du cluster. Bien que les nœuds "seed" aient un rôle spécial lors de la découverte et de la formation du cluster, ils ne sont pas des "maîtres" ou des nœuds privilégiés en termes de traitement des données. Une fois que le cluster est opérationnel, tous les nœuds, qu'ils soient "seed" ou non, fonctionnent de manière égale et distribuée.
 
 `cr_cassandra1` est défini comme le nœud "seed", `cr_cassandra2` et `cr_cassandra3` le contacteront initialement pour obtenir des informations sur le reste du cluster lorsqu'ils démarreront.
+
+La version low-ram n'a qu'un seul noeud.
 
 ## Utilisation de cqlsh
 
@@ -31,6 +33,8 @@ Créons deux keyspaces :
 CREATE KEYSPACE cr_demo1 WITH replication = {'class': 'SimpleStrategy', 'replication_factor': 3};
 CREATE KEYSPACE cr_demo2 WITH replication = {'class': 'SimpleStrategy', 'replication_factor': 3};
 ```
+
+Si vous utilisez la version low-ram, utilisez un RF de 1.
 
 L'option `WITH replication` définit la stratégie de réplication pour le keyspace. Dans cet exemple, nous utilisons SimpleStrategy avec un replication_factor de 3. Cela signifie que chaque donnée sera répliquée sur trois nœuds différents du cluster, garantissant ainsi une meilleure disponibilité et résilience des données.
 
@@ -201,7 +205,9 @@ CREATE CUSTOM INDEX ON cr_cfdemo1 (cr_col2) USING 'org.apache.cassandra.index.sa
 docker exec -it r510-cr_cassandra1-1 nodetool repair cr_demo1 cr_cfdemo1
 ```
 
-## Gestion des nœuds et résilience
+## Gestion des nœuds et résilience - Facultatif
+
+La suite n'est pas faisable si vous utilisez la version low-ram.
 
 La résilience est la capacité d'un système à fonctionner et à se remettre des pannes. Dans le contexte de Cassandra, cela signifie que le système peut continuer à fonctionner même si certains nœuds tombent en panne.
 
