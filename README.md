@@ -76,6 +76,8 @@ INSERT INTO cr_cfdemo1 (cr_col1, cr_col2, cr_col3) VALUES (uuid(), 'test', 123);
 
 Les collections (listes, sets, maps) et les tuples permettent de stocker plusieurs valeurs dans une seule colonne.
 
+Remplacer `<some_uuid>` par l'UUID inséré précédemment (voir avec un SELECT).
+
 ```sql
 UPDATE cr_cfdemo1 SET cr_col4 = {'value1', 'value2'} WHERE cr_col1 = <some_uuid>;
 UPDATE cr_cfdemo1 SET cr_col5 = {'key1': 1, 'key2': 2} WHERE cr_col1 = <some_uuid>;
@@ -150,6 +152,8 @@ PRIMARY KEY (cr_col2, cr_col1);
 
 ## Requêtes SELECT
 
+Remplacer `<some_uuid>` par l'UUID inséré précédemment (voir avec un SELECT).
+
 ```sql
 SELECT * FROM cr_cfdemo1 WHERE cr_col1 = <some_uuid>;
 SELECT * FROM cr_cfdemo1 WHERE cr_col2 IN ('value1', 'value2') ALLOW FILTERING;
@@ -185,6 +189,8 @@ SELECT * FROM cr_cfdemo1 WHERE cr_col3 = 123 ALLOW FILTERING;
 ```
 
 ## Mise à jour et suppression de données
+
+Remplacer `<some_uuid>` par l'UUID inséré précédemment (voir avec un SELECT).
 
 ```sql
 UPDATE cr_cfdemo1 SET cr_col4 = cr_col4 + {'value3'} WHERE cr_col1 = <some_uuid>;
