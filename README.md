@@ -152,7 +152,7 @@ PRIMARY KEY (cr_col2, cr_col1);
 
 ```sql
 SELECT * FROM cr_cfdemo1 WHERE cr_col1 = <some_uuid>;
-SELECT * FROM cr_cfdemo1 WHERE cr_col2 IN ('value1', 'value2');
+SELECT * FROM cr_cfdemo1 WHERE cr_col2 IN ('value1', 'value2') ALLOW FILTERING;
 ```
 
 ## Fonctions d'agrégation
@@ -165,7 +165,7 @@ SELECT COUNT(*), MAX(cr_col3), AVG(cr_col3), MIN(cr_col3), SUM(cr_col3) FROM cr_
 
 ```sql
 SELECT * FROM cr_cfdemo1 LIMIT 5;
-SELECT * FROM cr_cfdemo1 WHERE cr_col3 > 100 AND cr_col3 < 200;
+SELECT * FROM cr_cfdemo1 WHERE cr_col3 > 100 AND cr_col3 < 200 ALLOW FILTERING;
 ```
 
 ## Index
