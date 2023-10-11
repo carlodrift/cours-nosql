@@ -212,10 +212,11 @@ SASI (SStable Attached Secondary Index) est un type d'index secondaire pour Cass
 
 ```sql
 USE cr_demo1;
+CREATE CUSTOM INDEX ON cr_cfdemo1 (cr_col2) USING 'org.apache.cassandra.index.sasi.SASIIndex' WITH OPTIONS = {'mode': 'PREFIX', 'analyzer_class': 'org.apache.cassandra.index.sasi.analyzer.StandardAnalyzer', 'case_sensitive': 'false'};
 CREATE CUSTOM INDEX ON cr_cfdemo1 (cr_col2) USING 'org.apache.cassandra.index.sasi.SASIIndex' WITH OPTIONS = {'mode': 'CONTAINS', 'analyzer_class': 'org.apache.cassandra.index.sasi.analyzer.StandardAnalyzer', 'case_sensitive': 'false'};
 ```
 
-- `mode` : Le mode de recherche. CONTAINS est utile pour les recherches par sous-chaîne.
+- `mode` : Le mode de recherche. CONTAINS est utile pour les recherches par sous-chaîne. PREFIX est utile pour les recherches par préfixe.
 - `analyzer_class` : L'analyseur à utiliser. StandardAnalyzer est un analyseur général qui divise le texte en termes basés sur des espaces blancs et des signes de ponctuation.
 - `case_sensitive`: Indique si la recherche doit être sensible à la casse ou non.
 
