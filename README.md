@@ -141,7 +141,7 @@ docker restart r510-cr_cassandra1-1
 Une vue matérialisée est une table générée à partir d'une table existante et organisée différemment.
 
 ```sql
-USE cr_cfdemo1;
+USE cr_demo1;
 CREATE MATERIALIZED VIEW cr_mv AS
 SELECT cr_col2, cr_col1, cr_col3
 FROM cr_cfdemo1
