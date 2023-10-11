@@ -1,18 +1,8 @@
 version: '3'
 
 services:
-  cr_mongodb:
-    image: mongo:latest
-    ports:
-      - "27017:27017"
-    environment:
-      MONGO_INITDB_ROOT_USERNAME: cr
-      MONGO_INITDB_ROOT_PASSWORD: cr_password
-    volumes:
-      - cr_mongodb_data:/data/db
-
   cr_cassandra1:
-    image: cassandra:latest
+    image: cassandra:4.1.3
     ports:
       - "9042:9042"
     environment:
