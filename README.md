@@ -193,6 +193,15 @@ DELETE cr_col4['value1'] FROM cr_cfdemo1 WHERE cr_col1 = <some_uuid>;
 
 ## Index personnalisés et requêtes SASI
 
+Par défaut, cette fonctionnalité est désactivée. Pour l'activer :
+
+```bash
+docker exec -it r510-cr_cassandra1-1 bash
+sed -i 's/sasi_indexes_enabled: false/sasi_indexes_enabled: true/' /etc/cassandra/cassandra.yaml
+exit
+docker restart r510-cr_cassandra1-1
+```
+
 SASI (SStable Attached Secondary Index) est un type d'index secondaire pour Cassandra. Il offre des capacités de recherche avancées, comme la recherche par préfixe, suffixe et sous-chaîne.
 
 ```sql
