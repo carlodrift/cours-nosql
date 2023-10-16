@@ -1,0 +1,16 @@
+version: '3'
+
+services:
+  cr_mongodb:
+    image: mongo:7.0.2
+    ports:
+      - "27017:27017"
+    environment:
+      MONGO_INITDB_ROOT_USERNAME: cr
+      MONGO_INITDB_ROOT_PASSWORD: cr_password
+    volumes:
+      - cr_mongodb_data:/data/db
+      - ./script.js:/scripts/script.js
+
+volumes:
+  cr_mongodb_data:
