@@ -8,7 +8,7 @@ Le fichier `docker-compose.yml` est disponible dans le dossier `mongodb` du repo
 docker-compose up -d
 ```
 
-Ce fichier lance un service MongoDB. Les identifiants par défaut sont `cr` pour l'utilisateur et `cr_password` pour le mot de passe. Les données sont persistées dans un volume nommé `cr_mongodb_data`.
+Ce fichier lance un service MongoDB. Les identifiants par défaut sont `username` pour l'utilisateur et `password` pour le mot de passe. Les données sont persistées dans un volume nommé `mongodb_data`.
 
 ## Utilisation de `mongosh`
 
@@ -17,7 +17,7 @@ Ce fichier lance un service MongoDB. Les identifiants par défaut sont `cr` pour
 Pour se connecter à l'instance MongoDB lancée par Docker :
 
 ```bash
-docker exec -it cr_mongodb mongosh -u cr -p cr_password
+docker exec -it mongodb mongosh -u username -p password
 ```
 
 ## Création d'une base de données
@@ -158,6 +158,16 @@ Supprimer toutes les lignes où `cr_col1` contient "data" :
 db.cr_mdemo1.remove({ cr_col1: /data/ })
 ```
 
+## Création et suppression d'un index
+
+```js
+db.cr_mdemo1.createIndex({ cr_col1: 1 })
+```
+
+```js
+db.cr_mdemo1.dropIndex("cr_col1_1")
+```
+
 ## Opérateurs de comparaison, logiques, élémentaires et de mise à jour
 
 - Comparaison : $eq, $gt, $gte, $lt, $lte, $ne, $in, $nin
@@ -166,46 +176,46 @@ db.cr_mdemo1.remove({ cr_col1: /data/ })
 - Mise à jour : $inc, $mul, $rename, $setOnInsert, $set, $unset, $min, $max, $currentDate, $addToSet, $pop, $pullAll, $pull, $pushAll, $push
 
 ```js
-// Trouver les documents où cr_col2 est égal à 100
+// cr_col2 est égal à 100
 db.cr_mdemo1.find({ cr_col2: { $eq: 100 } })
 
-// Trouver les documents où cr_col2 est supérieur à 100
+// cr_col2 est supérieur à 100
 db.cr_mdemo1.find({ cr_col2: { $gt: 100 } })
 
-// Trouver les documents où cr_col2 est supérieur ou égal à 100
+// cr_col2 est supérieur ou égal à 100
 db.cr_mdemo1.find({ cr_col2: { $gte: 100 } })
 
-// Trouver les documents où cr_col2 est inférieur à 200
+// cr_col2 est inférieur à 200
 db.cr_mdemo1.find({ cr_col2: { $lt: 200 } })
 
-// Trouver les documents où cr_col2 est inférieur ou égal à 200
+// cr_col2 est inférieur ou égal à 200
 db.cr_mdemo1.find({ cr_col2: { $lte: 200 } })
 
-// Trouver les documents où cr_col2 n'est pas égal à 150
+// cr_col2 n'est pas égal à 150
 db.cr_mdemo1.find({ cr_col2: { $ne: 150 } })
 
-// Trouver les documents où cr_col2 est dans la liste [100, 150, 200]
+// cr_col2 est dans la liste [100, 150, 200]
 db.cr_mdemo1.find({ cr_col2: { $in: [100, 150, 200] } })
 
-// Trouver les documents où cr_col2 n'est pas dans la liste [100, 150, 200]
+// cr_col2 n'est pas dans la liste [100, 150, 200]
 db.cr_mdemo1.find({ cr_col2: { $nin: [100, 150, 200] } })
 
-// Trouver les documents où soit cr_col2 est égal à 100, soit cr_col3 est égal à 150
+// Soit cr_col2 est égal à 100, soit cr_col3 est égal à 150
 db.cr_mdemo1.find({ $or: [{ cr_col2: 100 }, { cr_col3: 150 }] })
 
-// Trouver les documents où cr_col2 est à la fois supérieur à 100 et inférieur à 200
+// cr_col2 est à la fois supérieur à 100 et inférieur à 200
 db.cr_mdemo1.find({ $and: [{ cr_col2: { $gt: 100 } }, { cr_col2: { $lt: 200 } }] })
 
-// Trouver les documents où cr_col2 n'est pas égal à 150
+// cr_col2 n'est pas égal à 150
 db.cr_mdemo1.find({ cr_col2: { $not: { $eq: 150 } } })
 
-// Trouver les documents où ni cr_col2 est égal à 100, ni cr_col2 est égal à 150
+// Ni cr_col2 est égal à 100, ni cr_col2 est égal à 150
 db.cr_mdemo1.find({ $nor: [{ cr_col2: 100 }, { cr_col2: 150 }] })
 
-// Trouver les documents où le champ cr_col2 existe
+// Le champ cr_col2 existe
 db.cr_mdemo1.find({ cr_col2: { $exists: true } })
 
-// Trouver les documents où cr_col2 est de type int
+// cr_col2 est de type int
 db.cr_mdemo1.find({ cr_col2: { $type: "int" } })
 
 // Incrémenter la valeur de cr_col2 de 1 pour les documents où cr_col1 est "String data 1"
@@ -253,15 +263,3 @@ db.cr_mdemo1.update({ cr_col1: "String data 1" }, { $pushAll: { cr_col8: [6, 7, 
 // Ajouter la valeur 6 au tableau cr_col8 pour les documents où cr_col1 est "String data 1"
 db.cr_mdemo1.update({ cr_col1: "String data 1" }, { $push: { cr_col8: 6 } })
 ```
-
-## Création et suppression d'un index
-
-```js
-db.cr_mdemo1.createIndex({ cr_col1: 1 })
-```
-
-```js
-db.cr_mdemo1.dropIndex("cr_col1_1")
-```
-
-

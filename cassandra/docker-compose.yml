@@ -1,36 +1,59 @@
 version: '3'
 
 services:
-  cr_cassandra1:
+  cassandra1:
     image: cassandra:4.1.3
+    container_name: cassandra1
+    hostname: cassandra1
+    healthcheck:
+      test: ["CMD", "cqlsh", "-e", "describe keyspaces" ]
+      interval: 10s
+      timeout: 10s
+      retries: 10
     ports:
       - "9042:9042"
-    environment:
-      CASSANDRA_CLUSTER_NAME: CR_CLUSTER
+    environment: &environment
+      CASSANDRA_CLUSTER_NAME: CLUSTER
       CASSANDRA_ENDPOINT_SNITCH: GossipingPropertyFileSnitch
+      CASSANDRA_SEEDS: "cassandra1,cassandra2"
     volumes:
-      - cr_cassandra1_data:/var/lib/cassandra
+      - cassandra1_data:/var/lib/cassandra
 
-  cr_cassandra2:
+  cassandra2:
     image: cassandra:4.1.3
-    environment:
-      CASSANDRA_CLUSTER_NAME: CR_CLUSTER
-      CASSANDRA_ENDPOINT_SNITCH: GossipingPropertyFileSnitch
-      CASSANDRA_SEEDS: cr_cassandra1
+    container_name: cassandra2
+    hostname: cassandra2
+    healthcheck:
+      test: ["CMD", "cqlsh", "-e", "describe keyspaces" ]
+      interval: 10s
+      timeout: 10s
+      retries: 10
+    ports:
+        - "9043:9042"
+    environment: *environment
     volumes:
-      - cr_cassandra2_data:/var/lib/cassandra
+      - cassandra2_data:/var/lib/cassandra
+    depends_on:
+      - cassandra1
 
-  cr_cassandra3:
+  cassandra3:
     image: cassandra:4.1.3
-    environment:
-      CASSANDRA_CLUSTER_NAME: CR_CLUSTER
-      CASSANDRA_ENDPOINT_SNITCH: GossipingPropertyFileSnitch
-      CASSANDRA_SEEDS: cr_cassandra1
+    container_name: cassandra3
+    hostname: cassandra3
+    healthcheck:
+      test: ["CMD", "cqlsh", "-e", "describe keyspaces" ]
+      interval: 10s
+      timeout: 10s
+      retries: 10
+    ports:
+        - "9044:9042"
+    environment: *environment
     volumes:
-      - cr_cassandra3_data:/var/lib/cassandra
+      - cassandra3_data:/var/lib/cassandra
+    depends_on:
+      - cassandra2
 
 volumes:
-  cr_mongodb_data:
-  cr_cassandra1_data:
-  cr_cassandra2_data:
-  cr_cassandra3_data:
+  cassandra1_data:
+  cassandra2_data:
+  cassandra3_data:

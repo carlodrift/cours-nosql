@@ -8,11 +8,9 @@ Le fichier `docker-compose.yml` est disponible dans le le dossier `cassandra` du
 docker-compose up -d
 ```
 
-Il y a trois nœuds Cassandra distincts. Ils font tous partie du même cluster. Le premier nœud, `cr_cassandra1`, agit comme un nœud "seed" pour les deux autres.
+Il y a trois nœuds Cassandra distincts. Ils font tous partie du même cluster. Les deux premiers nœuds agissent comme un nœud seed pour les deux autres.
 
-Un nœud "seed" est un nœud de référence pour aider les nouveaux nœuds à rejoindre le cluster. Lorsqu'un nœud Cassandra démarre, il utilise les nœuds "seed" pour obtenir une liste des autres nœuds du cluster et comprendre la topologie globale du cluster. Bien que les nœuds "seed" aient un rôle spécial lors de la découverte et de la formation du cluster, ils ne sont pas des "maîtres" ou des nœuds privilégiés en termes de traitement des données. Une fois que le cluster est opérationnel, tous les nœuds, qu'ils soient "seed" ou non, fonctionnent de manière égale et distribuée.
-
-`cr_cassandra1` est défini comme le nœud "seed", `cr_cassandra2` et `cr_cassandra3` le contacteront initialement pour obtenir des informations sur le reste du cluster lorsqu'ils démarreront.
+Un nœud seed est un nœud de référence pour aider les nouveaux nœuds à rejoindre le cluster. Lorsqu'un nœud Cassandra démarre, il utilise les nœuds seed pour obtenir une liste des autres nœuds du cluster et comprendre la topologie globale du cluster. Bien que les nœuds seed aient un rôle spécial lors de la découverte et de la formation du cluster, ils ne sont pas des des nœuds privilégiés en termes de traitement des données. Une fois que le cluster est opérationnel, tous les nœuds, qu'ils soient seed ou non, fonctionnent de manière égale et distribuée.
 
 La version low-ram n'a qu'un seul noeud.
 
@@ -21,7 +19,7 @@ La version low-ram n'a qu'un seul noeud.
 C'est un outil en ligne de commande pour intéragir avec Cassandra.
 
 ```bash
-docker exec -it cassandra-cr_cassandra1-1 cqlsh
+docker exec -it cassandra1 cqlsh
 ```
 
 ## Keyspaces
@@ -151,10 +149,10 @@ CREATE TABLE cr_cfdemo4 (
 Par défaut, cette fonctionnalité est désactivée. Pour l'activer :
 
 ```bash
-docker exec -it cassandra-cr_cassandra1-1 bash
+docker exec -it cassandra1 bash
 sed -i 's/materialized_views_enabled: false/materialized_views_enabled: true/' /etc/cassandra/cassandra.yaml
 exit
-docker restart cassandra-cr_cassandra1-1
+docker restart cassandra1
 ```
 
 Une vue matérialisée est une table générée à partir d'une table existante et organisée différemment.
@@ -222,10 +220,10 @@ DELETE cr_col4['value1'] FROM cr_cfdemo1 WHERE cr_col1 = <some_uuid>;
 Par défaut, cette fonctionnalité est désactivée. Pour l'activer :
 
 ```bash
-docker exec -it cassandra-cr_cassandra1-1 bash
+docker exec -it cassandra1 bash
 sed -i 's/sasi_indexes_enabled: false/sasi_indexes_enabled: true/' /etc/cassandra/cassandra.yaml
 exit
-docker restart cassandra-cr_cassandra1-1
+docker restart cassandra1
 ```
 
 SASI (SStable Attached Secondary Index) est un type d'index secondaire pour Cassandra. Il offre des capacités de recherche avancées, comme la recherche par préfixe, suffixe et sous-chaîne.
@@ -269,7 +267,7 @@ SELECT * FROM cr_demo1.cr_cfdemo1 WHERE cr_col2 LIKE '%test%';
 `nodetool` est un outil en ligne de commande pour gérer le Cassandra. Réparer une table signifie synchroniser les données entre les nœuds pour s'assurer qu'ils ont tous les mêmes données.
 
 ```bash
-docker exec -it cassandra-cr_cassandra1-1 nodetool repair cr_demo1 cr_cfdemo1
+docker exec -it cassandra1 nodetool repair cr_demo1 cr_cfdemo1
 ```
 
 ## Ajustement du Bloom Filter
@@ -294,7 +292,7 @@ La résilience est la capacité d'un système à fonctionner et à se remettre d
 On peut arrêter certains noeuds pour tester. Arrêtons les deuxième et troisième noeuds :
 
 ```bash
-docker-compose stop cassandra-cr_cassandra2-1 cassandra-cr_cassandra3-1
+docker-compose stop cassandra2 cassandra3
 ```
 
 Avec deux nœuds sur trois arrêtés, nous avons maintenant moins que le quorum de nœuds en fonctionnement car nous avons un facteur de réplication de 3.
@@ -324,7 +322,7 @@ Avec seulement un nœud en fonctionnement, ces opérations échoueront car nous 
 Redémarrons l'un des noeuds :
 
 ```bash
-docker-compose start cassandra-cr_cassandra2-1
+docker-compose start cassandra2
 ```
 
 Avec deux nœuds maintenant en fonctionnement, nous avons atteint le quorum nécessaire pour un RF de 3.
@@ -340,3 +338,50 @@ SELECT * FROM cr_demo1.cr_cfdemo1 WHERE cr_col2 = 'test_quorum_recovery' ALLOW F
 ```
 
 Cette fois, les opérations devraient réussir car deux nœuds (le quorum pour un RF de 3) sont en ligne et fonctionnels. Cela démontre la capacité de Cassandra à se remettre des pannes et à continuer à fonctionner dès que le quorum est rétabli.
+
+## Scripts
+
+### [Java](https://github.com/carlodrift/cours-nosql/tree/main/cassandra/scripts/java)
+
+Installer Java et Maven.
+
+Se placer dans le dossier `cassandra/scripts/java`.
+
+```bash
+mvn compile && mvn exec:java
+```
+
+On peut aussi utiliser son IDE préféré à la place.
+
+### [Python](https://github.com/carlodrift/cours-nosql/tree/main/cassandra/scripts/python)
+
+Installer Python.
+
+Se placer dans le dossier `cassandra/scripts/python`.
+
+```bash
+pip install cassandra-driver
+python cassandra-script.py
+```
+
+### [JavaScript](https://github.com/carlodrift/cours-nosql/tree/main/cassandra/scripts/javascript)
+
+Installer Node.
+
+Se placer dans le dossier `cassandra/scripts/javascript`.
+
+```bash
+npm install cassandra-driver
+node cassandra-script.js
+```
+
+### [Go](https://github.com/carlodrift/cours-nosql/tree/main/cassandra/scripts/go)
+
+Installer [Go](https://go.dev/).
+
+Se placer dans le dossier `cassandra/scripts/go`.
+
+```bash
+go get github.com/gocql/gocql
+go run cassandra-script.go
+```

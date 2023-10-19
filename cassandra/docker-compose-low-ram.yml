@@ -1,16 +1,22 @@
 version: '3'
 
 services:
-  cr_cassandra1:
+  cassandra1:
     image: cassandra:4.1.3
+    container_name: cassandra1
+    hostname: cassandra1
+    healthcheck:
+      test: ["CMD", "cqlsh", "-e", "describe keyspaces" ]
+      interval: 10s
+      timeout: 10s
+      retries: 10
     ports:
       - "9042:9042"
     environment:
-      CASSANDRA_CLUSTER_NAME: CR_CLUSTER
+      CASSANDRA_CLUSTER_NAME: CLUSTER
       CASSANDRA_ENDPOINT_SNITCH: GossipingPropertyFileSnitch
     volumes:
-      - cr_cassandra1_data:/var/lib/cassandra
+      - cassandra1_data:/var/lib/cassandra
 
 volumes:
-  cr_mongodb_data:
-  cr_cassandra1_data:
+  cassandra1_data:
