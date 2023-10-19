@@ -95,10 +95,10 @@ db.cr_mdemo1.insertMany([
 
 ## Chargement d'un fichier JavaScript
 
-Dans notre configuration docker-compose.yml, nous avons utilisé cette fonctionnalité pour monter le fichier script.js dans le conteneur MongoDB. Pour charger et exécuter le contenu du fichier script.js dans MongoDB, utilisez la commande suivante :
+Dans notre configuration docker-compose.yml, nous avons utilisé cette fonctionnalité pour monter le fichier test.js dans le conteneur MongoDB. Pour charger et exécuter le contenu du fichier test.js dans MongoDB, utilisez la commande suivante :
 
 ```js
-load("/scripts/script.js")
+load("/scripts/test.js")
 ```
 
 ## Mise à jour d'un tableau dans une ligne
@@ -262,4 +262,22 @@ db.cr_mdemo1.update({ cr_col1: "String data 1" }, { $pushAll: { cr_col8: [6, 7, 
 
 // Ajouter la valeur 6 au tableau cr_col8 pour les documents où cr_col1 est "String data 1"
 db.cr_mdemo1.update({ cr_col1: "String data 1" }, { $push: { cr_col8: 6 } })
+```
+
+## Scripts
+
+### [PHP](https://github.com/carlodrift/cours-nosql/tree/main/mongodb/scripts/php)
+
+Se placer dans le dossier `mongodb/scripts/php`.
+
+```bash
+docker build -t php-mongodb-script . && docker run --rm --network host php-mongodb-script
+```
+
+### [Scala](https://github.com/carlodrift/cours-nosql/tree/main/mongodb/scripts/scala)
+
+Se placer dans le dossier `scala/scripts/php`.
+
+```bash
+docker build -t scala-mongodb-script . && docker run --rm --network host scala-mongodb-script
 ```
