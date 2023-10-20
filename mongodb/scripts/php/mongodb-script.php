@@ -48,6 +48,8 @@ class MongoDBCommand extends Command
             $output->writeln(json_encode($document));
         }
 
+        $collection->drop();
+
         return Command::SUCCESS;
     }
 }

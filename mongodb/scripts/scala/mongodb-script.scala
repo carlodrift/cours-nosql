@@ -32,5 +32,7 @@ object MongoInteract extends App {
   val resultsDesc = Await.result(collection.find().sort(Document("age" -> -1)).toFuture(), 10.seconds)
   resultsDesc.foreach(doc => println(doc.toJson()))
 
+  Await.result(collection.drop().toFuture(), 10.seconds)
+
   mongoClient.close()
 }
