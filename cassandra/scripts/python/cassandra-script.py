@@ -1,7 +1,24 @@
 from cassandra.cluster import Cluster
+from cassandra.cluster import Cluster, ExecutionProfile
+from cassandra.policies import WhiteListRoundRobinPolicy, DowngradingConsistencyRetryPolicy
+from cassandra import ConsistencyLevel
+from cassandra.query import tuple_factory
+from cassandra.cluster import Cluster, ExecutionProfile, EXEC_PROFILE_DEFAULT
+from cassandra.policies import WhiteListRoundRobinPolicy, DowngradingConsistencyRetryPolicy
+from cassandra.query import tuple_factory
 
 def main():
-    cluster = Cluster(['127.0.0.1'], port=9042)
+
+    profile = ExecutionProfile(
+        load_balancing_policy=WhiteListRoundRobinPolicy(['127.0.0.1']),
+        retry_policy=DowngradingConsistencyRetryPolicy(),
+        consistency_level=ConsistencyLevel.ONE,
+        serial_consistency_level=ConsistencyLevel.LOCAL_SERIAL,
+        request_timeout=60,
+        row_factory=tuple_factory
+    )
+    
+    cluster = Cluster(execution_profiles={EXEC_PROFILE_DEFAULT: profile})
     session = cluster.connect()
 
     session.execute("""
@@ -31,7 +48,7 @@ def main():
 
     rows = session.execute("SELECT id, name, age, address FROM CR_Keyspace.CR_Table")
     for row in rows:
-        print(f"ID: {row.id}, Name: {row.name}, Age: {row.age}, Address: {row.address}")
+        print(f"ID: {row[0]}, Name: {row[1]}, Age: {row[2]}, Address: {row[3]}")
 
     cluster.shutdown()
 
