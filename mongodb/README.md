@@ -168,99 +168,74 @@ db.cr_mdemo1.createIndex({ cr_col1: 1 })
 db.cr_mdemo1.dropIndex("cr_col1_1")
 ```
 
-## Opérateurs de comparaison, logiques, élémentaires et de mise à jour
+## Opérateurs
 
-- Comparaison : $eq, $gt, $gte, $lt, $lte, $ne, $in, $nin
-- Logiques : $or, $and, $not, $nor
-- Élémentaires : $exists, $type
-- Mise à jour : $inc, $mul, $rename, $setOnInsert, $set, $unset, $min, $max, $currentDate, $addToSet, $pop, $pullAll, $pull, $pushAll, $push
+### Opérateurs de comparaison
+
+- `$eq` : Égal à
+- `$gt` : Supérieur à
+- `$gte` : Supérieur ou égal à
+- `$lt` : Inférieur à
+- `$lte` : Inférieur ou égal à
+- `$ne` : Non égal à
+- `$in` : Dans la liste
+- `$nin` : Pas dans la liste
+
+Exemples :
 
 ```js
-// cr_col2 est égal à 100
 db.cr_mdemo1.find({ cr_col2: { $eq: 100 } })
-
-// cr_col2 est supérieur à 100
-db.cr_mdemo1.find({ cr_col2: { $gt: 100 } })
-
-// cr_col2 est supérieur ou égal à 100
-db.cr_mdemo1.find({ cr_col2: { $gte: 100 } })
-
-// cr_col2 est inférieur à 200
-db.cr_mdemo1.find({ cr_col2: { $lt: 200 } })
-
-// cr_col2 est inférieur ou égal à 200
-db.cr_mdemo1.find({ cr_col2: { $lte: 200 } })
-
-// cr_col2 n'est pas égal à 150
-db.cr_mdemo1.find({ cr_col2: { $ne: 150 } })
-
-// cr_col2 est dans la liste [100, 150, 200]
 db.cr_mdemo1.find({ cr_col2: { $in: [100, 150, 200] } })
+```
 
-// cr_col2 n'est pas dans la liste [100, 150, 200]
-db.cr_mdemo1.find({ cr_col2: { $nin: [100, 150, 200] } })
+### Opérateurs logiques
 
-// Soit cr_col2 est égal à 100, soit cr_col3 est égal à 150
+- `$or` : Ou
+- `$and` : Et
+- `$not` : Non
+- `$nor` : Ni ... ni
+
+Exemples :
+
+```js
 db.cr_mdemo1.find({ $or: [{ cr_col2: 100 }, { cr_col3: 150 }] })
-
-// cr_col2 est à la fois supérieur à 100 et inférieur à 200
 db.cr_mdemo1.find({ $and: [{ cr_col2: { $gt: 100 } }, { cr_col2: { $lt: 200 } }] })
+```
 
-// cr_col2 n'est pas égal à 150
-db.cr_mdemo1.find({ cr_col2: { $not: { $eq: 150 } } })
+### Opérateurs élémentaires
 
-// Ni cr_col2 est égal à 100, ni cr_col2 est égal à 150
-db.cr_mdemo1.find({ $nor: [{ cr_col2: 100 }, { cr_col2: 150 }] })
+- `$exists` : Vérifie l'existence d'un champ
+- `$type` : Vérifie le type d'un champ
 
-// Le champ cr_col2 existe
+```js
 db.cr_mdemo1.find({ cr_col2: { $exists: true } })
-
-// cr_col2 est de type int
 db.cr_mdemo1.find({ cr_col2: { $type: "int" } })
+```
 
-// Incrémenter la valeur de cr_col2 de 1 pour les documents où cr_col1 est "String data 1"
+### Opérateurs de mise à jour
+
+Opérateurs de mise à jour
+
+- `$inc` : Incrémente une valeur
+- `$mul` : Multiplie une valeur
+- `$rename` : Renomme un champ
+- `$setOnInsert` : Définit une valeur lors de l'insertion
+- `$set` : Définit une valeur
+- `$unset` : Supprime un champ
+- `$min` : Définit une valeur minimale
+- `$max` : Définit une valeur maximale
+- `$currentDate` : Définit la date actuelle
+- `$addToSet` : Ajoute une valeur à un ensemble (sans doublons)
+- `$pop` : Supprime le premier ou dernier élément d'un tableau
+- `$pullAll` : Supprime toutes les occurrences d'une liste de valeurs d'un tableau
+- `$pull` : Supprime toutes les occurrences d'une valeur d'un tableau
+- `$push` : Ajoute une valeur à un tableau
+
+Exemples :
+
+```js
 db.cr_mdemo1.update({ cr_col1: "String data 1" }, { $inc: { cr_col2: 1 } })
-
-// Multiplier la valeur de cr_col2 par 2 pour les documents où cr_col1 est "String data 1"
-db.cr_mdemo1.update({ cr_col1: "String data 1" }, { $mul: { cr_col2: 2 } })
-
-// Renommer le champ cr_col2 en new_col2 pour les documents où cr_col1 est "String data 1"
 db.cr_mdemo1.update({ cr_col1: "String data 1" }, { $rename: { "cr_col2": "new_col2" } })
-
-// Définir la valeur de cr_col2 à 150 lors de l'insertion si cr_col1 est "String data 1"
-db.cr_mdemo1.update({ cr_col1: "String data 1" }, { $setOnInsert: { cr_col2: 150 } }, { upsert: true })
-
-// Définir la valeur de cr_col2 à 150 pour les documents où cr_col1 est "String data 1"
-db.cr_mdemo1.update({ cr_col1: "String data 1" }, { $set: { cr_col2: 150 } })
-
-// Supprimer le champ cr_col2 pour les documents où cr_col1 est "String data 1"
-db.cr_mdemo1.update({ cr_col1: "String data 1" }, { $unset: { cr_col2: "" } })
-
-// Définir la valeur de cr_col2 au minimum entre sa valeur actuelle et 100 pour les documents où cr_col1 est "String data 1"
-db.cr_mdemo1.update({ cr_col1: "String data 1" }, { $min: { cr_col2: 100 } })
-
-// Définir la valeur de cr_col2 au maximum entre sa valeur actuelle et 200 pour les documents où cr_col1 est "String data 1"
-db.cr_mdemo1.update({ cr_col1: "String data 1" }, { $max: { cr_col2: 200 } })
-
-// Définir la valeur de cr_col5 à la date actuelle pour les documents où cr_col1 est "String data 1"
-db.cr_mdemo1.update({ cr_col1: "String data 1" }, { $currentDate: { cr_col5: true } })
-
-// Ajouter la valeur 6 à cr_col8 (en tant qu'ensemble) pour les documents où cr_col1 est "String data 1"
-db.cr_mdemo1.update({ cr_col1: "String data 1" }, { $addToSet: { cr_col8: 6 } })
-
-// Supprimer le dernier élément du tableau cr_col8 pour les documents où cr_col1 est "String data 1"
-db.cr_mdemo1.update({ cr_col1: "String data 1" }, { $pop: { cr_col8: 1 } })
-
-// Supprimer toutes les occurrences des valeurs 2 et 3 du tableau cr_col8 pour les documents où cr_col1 est "String data 1"
-db.cr_mdemo1.update({ cr_col1: "String data 1" }, { $pullAll: { cr_col8: [2, 3] } })
-
-// Supprimer toutes les occurrences de la valeur 2 du tableau cr_col8 pour les documents où cr_col1 est "String data 1"
-db.cr_mdemo1.update({ cr_col1: "String data 1" }, { $pull: { cr_col8: 2 } })
-
-// Ajouter les valeurs 6, 7 et 8 au tableau cr_col8 pour les documents où cr_col1 est "String data 1"
-db.cr_mdemo1.update({ cr_col1: "String data 1" }, { $pushAll: { cr_col8: [6, 7, 8] } })
-
-// Ajouter la valeur 6 au tableau cr_col8 pour les documents où cr_col1 est "String data 1"
 db.cr_mdemo1.update({ cr_col1: "String data 1" }, { $push: { cr_col8: 6 } })
 ```
 
@@ -276,7 +251,7 @@ docker build -t php-mongodb-script . && docker run --rm --network host php-mongo
 
 ### [Scala](https://github.com/carlodrift/cours-nosql/tree/main/mongodb/scripts/scala)
 
-Se placer dans le dossier `scala/scripts/php`.
+Se placer dans le dossier `mongodb/scripts/scala`.
 
 ```bash
 docker build -t scala-mongodb-script . && docker run --rm --network host scala-mongodb-script
