@@ -14,6 +14,8 @@ Un nœud seed est un nœud de référence pour aider les nouveaux nœuds à rejo
 
 La version low-ram n'a qu'un seul noeud.
 
+<img width="736" alt="image" src="https://github.com/carlodrift/cours-nosql/assets/30211659/96005a30-dfad-4ca6-88b9-d434895be859">
+
 ## Utilisation de cqlsh
 
 C'est un outil en ligne de commande pour intéragir avec Cassandra.
@@ -262,6 +264,9 @@ Recherche par sous-chaîne :
 SELECT * FROM cr_demo1.cr_cfdemo1 WHERE cr_col2 LIKE '%test%';
 ```
 
+<img width="1107" alt="image" src="https://github.com/carlodrift/cours-nosql/assets/30211659/2e2675d4-4c5f-425e-84cd-776beb320acd">
+
+
 ## Nodetool et réparation
 
 `nodetool` est un outil en ligne de commande pour gérer le Cassandra. Réparer une table signifie synchroniser les données entre les nœuds pour s'assurer qu'ils ont tous les mêmes données.
@@ -269,6 +274,8 @@ SELECT * FROM cr_demo1.cr_cfdemo1 WHERE cr_col2 LIKE '%test%';
 ```bash
 docker exec -it cassandra1 nodetool repair cr_demo1 cr_cfdemo1
 ```
+
+<img width="1497" alt="image" src="https://github.com/carlodrift/cours-nosql/assets/30211659/8d2cc837-811c-4673-8b8b-2d8dc13ba819">
 
 ## Ajustement du Bloom Filter
 
@@ -319,6 +326,8 @@ SELECT * FROM cr_demo1.cr_cfdemo1 WHERE cr_col2 = 'test_quorum' ALLOW FILTERING;
 
 Avec seulement un nœud en fonctionnement, ces opérations échoueront car nous n'atteignons pas le quorum nécessaire. On aura une erreur indiquant que le niveau de cohérence requis n'a pas été atteint. Pour que ces opérations réussissent, au moins deux nœuds (le quorum pour un RF de 3) doivent être en ligne et fonctionnels.
 
+<img width="1007" alt="image" src="https://github.com/carlodrift/cours-nosql/assets/30211659/19d08ea7-6716-4198-9b69-b92e7d4339ff">
+
 Redémarrons l'un des noeuds :
 
 ```bash
@@ -338,6 +347,8 @@ SELECT * FROM cr_demo1.cr_cfdemo1 WHERE cr_col2 = 'test_quorum_recovery' ALLOW F
 ```
 
 Cette fois, les opérations devraient réussir car deux nœuds (le quorum pour un RF de 3) sont en ligne et fonctionnels. Cela démontre la capacité de Cassandra à se remettre des pannes et à continuer à fonctionner dès que le quorum est rétabli.
+
+<img width="857" alt="image" src="https://github.com/carlodrift/cours-nosql/assets/30211659/c70d00c8-f746-4230-b7e2-4749cbd1dc91">
 
 ## Scripts
 
