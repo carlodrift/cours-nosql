@@ -256,3 +256,32 @@ Se placer dans le dossier `mongodb/scripts/scala`.
 ```bash
 docker build -t scala-mongodb-script . && docker run --rm --network host scala-mongodb-script
 ```
+
+## Glossaire
+
+1. **Modèle de données** :
+- **Document** : Une unité de stockage de données, similaire à un enregistrement dans les bases de données relationnelles.
+- **Collection** : Un ensemble de documents, similaire à une table dans les bases de données relationnelles.
+- **BSON** : Format binaire utilisé pour stocker les documents.
+2. **Indexation** :
+- Permet des recherches rapides.
+- Les index peuvent être créés sur n'importe quel champ du document.
+3. **Sharding** :
+- Technique pour distribuer les données sur plusieurs serveurs.
+- Permet à MongoDB de gérer de grandes quantités de données et d'offrir une scalabilité horizontale (ajouter plus de machines ≠ ajouter plus de puissance, scalabilité verticale).
+- **Shard** : Chaque serveur de la base de données dans le système sharded est appelé un shard, il détient un sous-ensemble des données de la base de données.
+- **Router (mongos)** : Le client parle à un processus router (mongos) qui dirige la requête vers le bon shard.
+- **Clé de sharding** : Permet de déterminer comment distribuer les données à travers les shards.
+- **Chunk** : Les données sont divisées en blocs de taille similaire appelés chunks. Chaque chunk est associé à une plage de valeurs de la clé de sharding.
+4. **Réplication** :
+- MongoDB utilise des ensembles de réplicas pour assurer la redondance des données.
+- Un ensemble de réplicas est composé d'un nœud primaire et de plusieurs nœuds secondaires.
+- Si le nœud primaire devient indisponible, les nœuds secondaires organisent une élection pour choisir un nouveau nœud primaire.
+5. **Oplog (Operation Log)** :
+- Un journal des opérations qui permet aux nœuds secondaires de rester synchronisés avec le nœud primaire.
+6. **Consistance et disponibilité** :
+- MongoDB utilise un modèle de consistence éventuelle.
+- Les lectures peuvent être configurées pour être effectuées sur le nœud primaire ou sur les nœuds secondaires.
+7. **Aggregation Framework** :
+- Permet le traitement des données et renvoie des résultats calculés.
+- Similaire aux opérations GROUP BY en SQL.
