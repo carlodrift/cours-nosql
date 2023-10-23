@@ -396,3 +396,28 @@ Se placer dans le dossier `cassandra/scripts/go`.
 go get github.com/gocql/gocql
 go run cassandra-script.go
 ```
+
+## Glossaire
+
+1. **Modèle de données** :
+- **Clé de partition** : Détermine sur quel nœud une rangée de données sera stockée. Première partie de la clé primaire.
+- **Clé de clustering** : Détermine l'ordre des données à l'intérieur d'une partition. Deuxième partie de la clé primaire 
+- **Table** : Contient des rangées de données. Chaque rangée est identifiée par une clé primaire.
+- **Espace de noms (Keyspace)** : Équivalent d'une base de données dans les systèmes RDBMS.
+2. **Architecture distribuée** :
+- **Nœud** : Une instance de Cassandra.
+- **Cluster** : Un ensemble de nœuds.
+- **Partitionnement** : Cassandra utilise une fonction de hachage pour distribuer les données à travers les nœuds. Détermine sur quel nœud une rangée sera stockée. La fonction de hachage transforme la clé de partition en un token qui détermine le nœud responsable de cette partition.
+- **Réplication** : Les données sont répliquées sur plusieurs nœuds pour assurer la disponibilité et la résilience.
+3. **Stratégie de réplication** :
+- **SimpleStrategy** : Utilisée pour un seul centre de données.
+- **NetworkTopologyStrategy** : Utilisée pour plusieurs centres de données.
+4. **Consistance** :
+- Cassandra offre une consistence éventuelle, ce qui signifie que les lectures peuvent ne pas refléter la dernière écriture.
+- **Niveau de consistence** : Définit combien de nœuds doivent confirmer une lecture ou une écriture.
+5. **Gossip Protocol** : Un protocole de communication entre les nœuds pour découvrir et partager l'état et l'information sur les autres nœuds.
+6. **Index** :
+- **Index secondaire** : Permet de requêter des données sur des colonnes non-clé.
+- **Index matérialisé** : Une table spécialisée qui stocke des données en fonction d'une colonne ou d'un ensemble de colonnes non-clé.
+7. **Allow Filtering** :
+- Force Cassandra à scanner toutes les partitions plutôt que celles identifiées par la clé de partition.
